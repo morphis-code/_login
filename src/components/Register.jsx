@@ -28,7 +28,7 @@ import {
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
-import Link from "next/link"
+
 
 
 const sex = [
@@ -48,14 +48,60 @@ const sex = [
 
 
 
+
+
 export default function Register(){
 
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState("")
+    const [formData, setFormData] = useState({
+        name:"",
+        email:"",
+    })
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+
+    const handlechange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]:e.target.value
+        })
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        if(password != confirmPassword){
+            console.log("Senhas incompatíveis")
+            return
+        }
+
+        try{
+            const response = await fetch("http://localhost:3333/api/register", {
+                method:"POST",
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({...formData,
+                    sex: value, 
+                    password: password})
+            })
+
+            if(!response.ok){
+                throw new Error("Register Error")
+            }
+            const data = await response.json()
+
+            console.log("Register succes", data)
+        }catch(error){
+            console.error(error)
+        }
+    }
+
 
 
     return(
-        <form className="w-full max-w-[400px]">
+        <form className="w-full max-w-[400px]" onSubmit={handleSubmit}>
             <Card className="w-full border-0 shadow-none lg:border-1 lg:shadow ">
             <CardHeader>
                 <CardTitle>Login</CardTitle>
@@ -64,11 +110,11 @@ export default function Register(){
             <CardContent>
                 <div className="flex flex-col gap-2 mb-5">
                     <Label>Name</Label>
-                    <Input/>
+                    <Input name="name" value={formData.name} onChange={handlechange}/>
                 </div>
                 <div className="flex flex-col gap-2 mb-5">
                     <Label>Email</Label>
-                    <Input/>
+                    <Input name="email" value={formData.email} onChange={handlechange}/>
                 </div>
                 <div className="flex flex-col gap-2 mb-5">
                     <Label>Sex</Label>
@@ -119,11 +165,11 @@ export default function Register(){
 
                 <div className="flex flex-col gap-2 mb-7">
                     <Label>Password</Label>
-                    <Input/>
+                    <Input name="password" value={password} onChange={(value)=>setPassword(value.target.value)} />
                 </div>
                 <div className="flex flex-col gap-2 mb-7">
                     <Label>Confirm Password</Label>
-                    <Input/>
+                    <Input value={confirmPassword} onChange={(value)=>setConfirmPassword(value.target.value)}/>
                 </div>
                 <Button className="w-full cursor-pointer" type="submit">Enviar</Button>
             </CardContent>
