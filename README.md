@@ -5,7 +5,7 @@ made with:
 - shadcn/ui: https://ui.shadcn.com/
 - Tailwindcss: https://tailwindcss.com/
 
-Before npm i:
+Command to start:
 
 `npm i --legacy-peer-deps`
 
